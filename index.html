@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EL UMBRAL DEL 2026 | Arquitectura Energética</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=JetBrains+Mono:wght@300&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #050505;
+            --gold-primary: #C5A065;
+            --gold-dim: #8a7045;
+            --text-color: #e0e0e0;
+            --terminal-bg: #0a0a0a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Playfair Display', serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Tipografía Técnica */
+        .tech-font {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* HEADER */
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            border-bottom: 1px solid var(--gold-dim);
+            padding-bottom: 2rem;
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            color: var(--gold-primary);
+            font-size: 2rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            font-style: italic;
+        }
+
+        /* INPUT SECTION */
+        .input-section {
+            text-align: center;
+            transition: opacity 0.5s ease;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            color: var(--gold-primary);
+        }
+
+        input[type="date"] {
+            background: transparent;
+            border: 1px solid var(--gold-dim);
+            color: var(--gold-primary);
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.2rem;
+            text-align: center;
+            width: 100%;
+            max-width: 300px;
+            margin-bottom: 2rem;
+            outline: none;
+            transition: border-color 0.3s;
+            color-scheme: dark; /* Dark mode date picker */
+        }
+
+        input[type="date"]:focus {
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 10px rgba(197, 160, 101, 0.2);
+        }
+
+        .btn-main {
+            background-color: var(--gold-primary);
+            color: var(--bg-color);
+            border: none;
+            padding: 1rem 2.5rem;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            letter-spacing: 0.1em;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-main:hover {
+            background-color: #dcb374;
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(197, 160, 101, 0.4);
+        }
+
+        /* LOADING ANIMATION */
+        .loading-screen {
+            display: none;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--gold-dim);
+        }
+
+        .loader-text {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* RESULT SECTION */
+        .result-section {
+            display: none; /* Hidden by default */
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        /* TECH DATA BOX */
+        .data-box {
+            background: var(--terminal-bg);
+            border: 1px solid var(--gold-dim);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .data-box::before {
+            content: 'CONFIDENTIAL // SYSTEM V.2026';
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            background: var(--bg-color);
+            padding: 0 5px;
+            color: var(--gold-dim);
+            font-size: 0.7rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px dashed #333;
+            padding: 0.5rem 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        .data-label { color: #666; }
+        .data-value { color: var(--gold-primary); }
+
+        /* NARRATIVE TEXT */
+        .narrative-container {
+            margin-bottom: 2.5rem;
+            min-height: 150px;
+        }
+
+        .typing-effect {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #ccc;
+            border-left: 2px solid var(--gold-primary);
+            padding-left: 1rem;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1em;
+            background-color: var(--gold-primary);
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* BRIDGE PHRASE */
+        .bridge-phrase {
+            text-align: center;
+            font-weight: 700;
+            color: var(--gold-primary);
+            margin: 2rem 0;
+            font-style: italic;
+            opacity: 0; /* Animated in JS */
+            transform: translateY(20px);
+            transition: all 1s ease;
+        }
+
+        /* VIDEO CONTAINER */
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            border: 1px solid var(--gold-dim);
+            margin-bottom: 2rem;
+            opacity: 0;
+            transition: opacity 1s ease 0.5s;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* CTA BUTTON FINAL */
+        .cta-container {
+            text-align: center;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .price-tag {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            font-size: 0.9rem;
+            font-family: 'JetBrains Mono', monospace;
+            text-decoration: line-through;
+        }
+
+        .real-price {
+            color: var(--gold-primary);
+            font-size: 1.2rem;
+            text-decoration: none;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        /* BLOQUE DE CONFIANZA */
+        .trust-anchor {
+          margin-top: 3rem;
+          padding: 2rem;
+          border-top: 1px solid #222;
+          text-align: center;
+        }
+
+        .trust-badges {
+          display: flex;
+          justify-content: center;
+          gap: 20px;
+          flex-wrap: wrap;
+          margin-bottom: 1.5rem;
+          filter: grayscale(1) brightness(1.5); /* Hace los logos dorados/blancos para que no rompan la estética */
+          opacity: 0.7;
+        }
+
+        .trust-badges img {
+          height: 35px;
+          width: auto;
+        }
+
+        .guarantee-box {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 15px;
+          max-width: 500px;
+          margin: 0 auto;
+          text-align: left;
+        }
+
+        .guarantee-icon {
+          font-size: 3rem;
+          color: var(--gold-primary);
+        }
+
+        .guarantee-text h4 {
+          color: var(--gold-primary);
+          font-family: 'Cinzel', serif;
+          font-size: 0.9rem;
+          margin-bottom: 5px;
+        }
+
+        .guarantee-text p {
+          font-size: 0.8rem;
+          color: #888;
+          line-height: 1.3;
+        }
+        /* BOTÓN DE WHATSAPP LUXURY */
+        .whatsapp-support {
+          margin-top: 3rem;
+          text-align: center;
+          border: 1px solid rgba(197, 160, 101, 0.3);
+          padding: 1.5rem;
+          background: rgba(197, 160, 101, 0.05);
+          border-radius: 4px;
+          transition: all 0.3s ease;
+        }
+
+        .whatsapp-support:hover {
+          border-color: var(--gold-primary);
+          background: rgba(197, 160, 101, 0.1);
+        }
+
+        .whatsapp-link {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          text-decoration: none;
+          color: var(--gold-primary);
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 0.9rem;
+          font-weight: bold;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        }
+
+        .whatsapp-icon-svg {
+          fill: var(--gold-primary);
+          width: 24px;
+          height: 24px;
+        }
+
+        .support-caption {
+          font-size: 0.7rem;
+          color: #666;
+          margin-top: 8px;
+          font-family: 'JetBrains Mono', monospace;
+        }
+        /* ESTILO DEL RELOJ SUTIL */
+        .timer-box {
+          font-family: 'JetBrains Mono', monospace;
+          text-align: center;
+          margin: 2rem 0 1rem 0;
+          padding: 10px;
+          border: 1px solid rgba(197, 160, 101, 0.2);
+          display: inline-block;
+          left: 50%;
+          transform: translateX(-50%);
+          position: relative;
+        }
+
+        .timer-label {
+          font-size: 0.65rem;
+          color: #666;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          display: block;
+          margin-bottom: 5px;
+        }
+
+        #countdown {
+          color: var(--gold-primary);
+          font-size: 1.2rem;
+          font-weight: bold;
+          text-shadow: 0 0 10px rgba(197, 160, 101, 0.3);
+        }
+
+        .pulsating-dot {
+          height: 6px;
+          width: 6px;
+          background-color: var(--gold-primary);
+          border-radius: 50%;
+          display: inline-block;
+          margin-right: 8px;
+          animation: pulse-gold 2s infinite;
+        }
+
+        @keyframes pulse-gold {
+          0% { transform: scale(0.95); opacity: 0.5; }
+          50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 8px var(--gold-primary); }
+          100% { transform: scale(0.95); opacity: 0.5; }
+        }
+          /* ESTILOS DEL BOTÓN DE PAGO FINAL */
+        .btn-luxury-final {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #C5A065 0%, #AA8548 100%);
+            color: #050505;
+            text-decoration: none;
+            padding: 1.2rem 2rem;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            border-radius: 2px;
+            box-shadow: 0 4px 20px rgba(197, 160, 101, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .btn-luxury-final:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(197, 160, 101, 0.5);
+            filter: brightness(1.1);
+        }
+
+        /* Efecto de brillo pasando por el botón */
+        .btn-luxury-final::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
+            transform: skewX(-25deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            100% { left: 200%; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <header>
+            <h1>El Umbral del 2026</h1>
+            <p class="subtitle">Reporte de Arquitectura Energética</p>
+        </header>
+
+        <div class="input-section" id="inputSection">
+            <p style="margin-bottom: 2rem; text-align: center; max-width: 600px; margin-left: auto; margin-right: auto;">
+                El sistema requiere tu huella temporal para calcular la intersección entre tu esencia y la frecuencia del año entrante.
+            </p>
+            <form id="calcForm">
+                <label for="birthdate">Ingresa tu Fecha de Nacimiento:</label>
+                <input type="date" id="birthdate" required>
+                <br>
+                <button type="submit" class="btn-main">Iniciar Diagnóstico</button>
+            </form>
+        </div>
+
+        <div class="loading-screen" id="loadingScreen">
+            <div id="terminalLog"></div>
+        </div>
+
+        <div class="result-section" id="resultSection">
+
+            <div class="data-box tech-font">
+                <div class="data-row">
+                    <span class="data-label">ID_USUARIO:</span>
+                    <span class="data-value" id="userIdHash">--</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">VECTOR DE DESTINO:</span>
+                    <span class="data-value">AÑO PERSONAL <span id="personalYearNum">X</span></span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">FRECUENCIA (Hz):</span>
+                    <span class="data-value" id="freqVal">0.00 Hz</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">VARIABLE DE SOMBRA (σ):</span>
+                    <span class="data-value" id="shadowVal">0.00</span>
+                </div>
+                <div class="data-row" style="border-bottom: none;">
+                    <span class="data-label">DIAGNÓSTICO:</span>
+                    <span class="data-value" style="color: red;">INTERFERENCIA DETECTADA</span>
+                </div>
+            </div>
+
+            <div class="narrative-container">
+                <p class="typing-effect" id="narrativeText"></p>
+                <span class="cursor"></span>
+            </div>
+
+            <div class="bridge-phrase" id="bridgePhrase">
+                "Tu diagnóstico está incompleto. El video a continuación contiene la clave para estabilizar tu arquitectura antes del 1 de enero. Este 2026 sé tu aunténtico tú"
+            </div>
+
+            <div class="video-wrapper" id="videoContainer">
+                </div>
+
+                <div class="cta-container" id="ctaContainer">
+
+                  <div style="margin-bottom: 1.5rem;">
+                    <p class="tech-font" style="color: #666; font-size: 0.9rem; text-decoration: line-through; margin-bottom: 5px;">
+                      VALOR PÚBLICO: $9.99 USD
+                    </p>
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                      <p style="color: var(--gold-primary); font-size: 2.5rem; font-family: 'Cinzel', serif; font-weight: 700; line-height: 1;">
+                        $3.99 USD
+                      </p>
+                  <span style="background: rgba(197, 160, 101, 0.2); color: var(--gold-primary); padding: 4px 8px; font-size: 0.7rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace;">
+                      USD
+                    </span>
+                  </div>
+                  <p class="tech-font" style="color: #888; font-size: 0.8rem; margin-top: 5px;">
+                    Acceso Inmediato • Formato PDF + Notion
+                  </p>
+                </div>
+
+                <a href="https://pay.hotmart.com/N103590326S" class="btn-luxury-final">
+                  <span class="btn-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                  </span>
+                  <span class="btn-text">DESBLOQUEAR MI ARQUITECTURA</span>
+                </a>
+
+                <div style="margin-top: 1rem; opacity: 0.6; font-size: 0.75rem; font-family: 'JetBrains Mono', monospace;">
+                  <span style="color: #4CAF50;">●</span> Encriptación SSL Segura
+                </div>
+              </div>
+            <div class="trust-anchor">
+
+            <div class="trust-badges">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard">
+                <img src="https://static-media.hotmart.com/brand/hotmart/logo-hotmart-white.svg" alt="Hotmart Secured" style="height: 25px;">
+            </div>
+
+            <div class="guarantee-box">
+              <div class="guarantee-icon">
+                <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="color: #C5A065;">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  <text x="7" y="15" fill="#C5A065" font-size="6" font-family="Arial" font-weight="bold">7</text>
+                </svg>
+              </div>
+              <div class="guarantee-text">
+                <h4>7 DÍAS DE GARANTÍA INCONDICIONAL</h4>
+                <p>Accede al reporte hoy. Si la arquitectura revelada no es de tu total satisfacción, procesaremos tu reembolso de inmediato a través de la plataforma. Sin preguntas.</p>
+              </div>
+            </div>
+
+            <p class="tech-font" style="margin-top: 2rem; font-size: 0.7rem; color: #444;">
+              PAGO PROCESADO POR ENCRIPTACIÓN SSL DE 256 BITS. <br>
+              ACCESO INMEDIATO TRAS LA CONFIRMACIÓN.
+            </p>
+          </div>
+            <div class="whatsapp-support">
+              <a href="https://wa.me/59164666591?text=Hola!%20Tengo%20una%20duda%20sobre%20mi%20Reporte%20de%20Arquitectura%20Energética%202026"
+              class="whatsapp-link"
+              target="_blank">
+              <svg class="whatsapp-icon-svg" viewBox="0 0 24 24">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.94 3.675 1.439 5.662 1.439h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+              </svg>
+              Soporte Directo Concierge
+            </a>
+            <p class="support-caption">Resolución de dudas técnicas y acceso inmediato.</p>
+          </div>
+
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // CONFIGURACIÓN DE DATOS (AQUÍ PEGAS TUS LINKS)
+        // ==========================================
+        const profiles = {
+            1: {
+                freq: "1.11 Hz",
+                shadowVar: "0.89 (Inestabilidad)",
+                text: "El 2026 marca tu retorno al origen, pero cuidado: el vacío del número 1 es voraz. Tu arquitectura energética indica que intentarás construir un imperio sobre arena movediza. Sientes la urgencia de empezar de nuevo, pero ¿es ambición o es el pánico a quedarte atrás lo que te mueve? Si no descodificas tu miedo a la irrelevancia, este año de 'inicios' será solo el comienzo de un agotamiento crónico.",
+                youtubeId: "Lcd_Jm7s94w"
+            },
+            2: {
+                freq: "2.20 Hz",
+                shadowVar: "0.45 (Interferencia)",
+                text: "Para ti, el 2026 no es un camino individual, es un juego de reflejos. Sin embargo, tu diseño revela una grieta: la pérdida de identidad por complacencia. Te aterra el conflicto y esa es tu mayor debilidad. En el umbral de este año, la pregunta no es a quién necesitas a tu lado, sino cuánto de ti has sacrificado para no estar solo. El 2026 devorará a quienes no sepan decir 'no'.",
+                youtubeId: "L51sC6W0n3A"
+            },
+            3: {
+                freq: "3.33 Hz",
+                shadowVar: "0.72 (Dispersión)",
+                text: "Tu energía para el 2026 es vibrante, pero peligrosamente superficial. El algoritmo detecta un patrón de fuga: usas el brillo para ocultar el desorden interno. Tu sombra es el miedo al silencio. Si sigues expandiéndote en todas direcciones sin un eje central, el 2026 no será el año de tu expansión, sino el año en que te desintegraste en mil proyectos inconclusos.",
+                youtubeId: "Bupt0UTUzco"
+            },
+            4: {
+                freq: "4.40 Hz",
+                shadowVar: "0.12 (Rigidez Máxima)",
+                text: "Buscas seguridad, pero tu estructura para el 2026 es una jaula, no un refugio. Tu cálculo matemático muestra una resistencia obsesiva al cambio. El mundo afuera se está transformando y tú intentas sostener el techo con las manos desnudas. Si no aprendes a flexibilizar tus cimientos, la presión del 2026 no te fortalecerá: te quebrará por el punto más rígido.",
+                youtubeId: "QWgtuVJxxEc"
+            },
+            5: {
+                freq: "5.55 Hz",
+                shadowVar: "0.95 (Caos Dinámico)",
+                text: "El 2026 te ofrece libertad, pero tu arquitectura sugiere que la confundirás con evasión. Tu sombra es la incapacidad de echar raíces. Corres hacia lo nuevo porque te aterra enfrentar lo que ya tienes. Sin un plano de contención, el exceso de movimiento de este año se convertirá en una espiral autodestructiva. ¿Eres libre o solo estás huyendo de ti mismo?",
+                youtubeId: "G_VVaRhT39U"
+            },
+            6: {
+                freq: "6.30 Hz",
+                shadowVar: "0.50 (Tensión Cíclica)",
+                text: "Tu diseño energético para el 2026 está saturado de 'deberes'. El sistema detecta una anomalía: estás usando la responsabilidad hacia otros como un escudo para no sanar tus propias heridas. Tu sombra es el perfeccionismo asfixiante. Si entras al 2026 cargando pesos que no te corresponden, terminarás odiando aquello que juraste proteger.",
+                youtubeId: "Z8m-bSu0hts"
+            },
+            7: {
+                freq: "7.83 Hz",
+                shadowVar: "0.88 (Aislamiento)",
+                text: "El 2026 es un año de profundidad intelectual, pero tu riesgo es la desconexión total. El análisis de tu sombra revela un cinismo defensivo: crees que nadie está a tu altura. Si conviertes tu búsqueda de sabiduría en una torre de marfil, el 2026 será el año más frío de tu vida. La inteligencia sin propósito es solo una forma sofisticada de soledad.",
+                youtubeId: "hPTc_PUayvY"
+            },
+            8: {
+                freq: "8.88 Hz",
+                shadowVar: "0.66 (Sobrecarga)",
+                text: "Tienes la frecuencia del poder, pero tu arquitectura energética muestra una deuda emocional interna. El 2026 te exigirá resultados, pero tu sombra es confundir el valor con el precio. Estás tan enfocado en no perder el control que has dejado de notar que el sistema que construiste te tiene prisionero. Este año, el éxito podría ser tu mayor fracaso si no ajustas el norte.",
+                youtubeId: "enBRFTJGd0Q"
+            },
+            9: {
+                freq: "9.99 Hz",
+                shadowVar: "0.99 (Decaimiento)",
+                text: "El 2026 es tu año de cierres, pero detecto una resistencia dolorosa a soltar. Tu diseño muestra que te aferras a versiones muertas de ti mismo por miedo al vacío que sigue. Tu sombra es la nostalgia paralizante. Si no permites que lo viejo muera con dignidad este año, no habrá espacio para que la arquitectura de tu nuevo ciclo pueda siquiera dibujarse.",
+                youtubeId: "Y-OIDpRywmY"
+            }
+        };
+
+        // ==========================================
+        // LÓGICA DEL SISTEMA
+        // ==========================================
+
+        document.getElementById('calcForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const dateInput = document.getElementById('birthdate').value;
+            if(!dateInput) return;
+
+            // 1. Ocultar input y mostrar loading
+            document.getElementById('inputSection').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('inputSection').style.display = 'none';
+                document.getElementById('loadingScreen').style.display = 'block';
+                runTerminalSequence(dateInput);
+            }, 500);
+        });
+
+        // Simulación de Terminal
+        function runTerminalSequence(date) {
+            const logs = [
+                "Iniciando protocolo de conexión...",
+                `Analizando vector temporal: ${date}`,
+                "Reduciendo teosófica de fecha...",
+                "Accediendo a base de datos akáshica...",
+                "Calculando resonancia de sombra...",
+                "Generando reporte de arquitectura..."
+            ];
+
+            const terminal = document.getElementById('terminalLog');
+            let delay = 0;
+
+            logs.forEach((log, index) => {
+                setTimeout(() => {
+                    terminal.innerHTML += `> ${log}<br>`;
+                }, delay);
+                delay += 800; // Tiempo entre líneas
+            });
+
+            // Al finalizar, mostrar resultados
+            setTimeout(() => {
+                calculateAndShowResult(date);
+            }, delay + 1000);
+        }
+
+        // Cálculo Numerológico (Año Personal)
+        function calculateAndShowResult(dateString) {
+            const date = new Date(dateString);
+            const day = date.getDate() + 1; // Ajuste zona horaria simple
+            const month = date.getMonth() + 1;
+
+            // Fórmula: Día + Mes + Año Universal (2026 = 1)
+            // 2026 -> 2+0+2+6 = 10 -> 1
+            let sum = day + month + 1;
+
+            // Reducir a un dígito (1-9)
+            while (sum > 9) {
+                sum = Array.from(String(sum), Number).reduce((a, b) => a + b, 0);
+            }
+
+            const personalYear = sum;
+            const data = profiles[personalYear];
+
+            // Inyectar Datos Crudos
+            document.getElementById('userIdHash').innerText = generateHash();
+            document.getElementById('personalYearNum').innerText = personalYear;
+            document.getElementById('freqVal').innerText = data.freq;
+            document.getElementById('shadowVal').innerText = data.shadowVar;
+
+            // Transición de Pantalla
+            document.getElementById('loadingScreen').style.display = 'none';
+            const resultSection = document.getElementById('resultSection');
+            resultSection.style.display = 'block';
+
+            // Forzar reflow para la transición CSS
+            void resultSection.offsetWidth;
+            resultSection.style.opacity = '1';
+
+            // Iniciar Efecto Typing
+            setTimeout(() => {
+                typeWriterEffect(data.text, 'narrativeText', () => {
+                    // Al terminar de escribir:
+                    showVideoAndBridge(data.youtubeId);
+                });
+            }, 1000);
+        }
+
+        function generateHash() {
+            return 'USR-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        }
+
+        // Efecto Máquina de Escribir
+        function typeWriterEffect(text, elementId, callback) {
+            const element = document.getElementById(elementId);
+            let i = 0;
+            const speed = 25; // Velocidad de escritura
+
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                } else {
+                    if(callback) callback();
+                }
+            }
+            type();
+        }
+
+        // Mostrar Video y CTA
+        function showVideoAndBridge(youtubeId) {
+            const bridge = document.getElementById('bridgePhrase');
+            const videoCont = document.getElementById('videoContainer');
+            const cta = document.getElementById('ctaContainer');
+
+            // 1. Mostrar Frase Puente
+            bridge.style.opacity = '1';
+            bridge.style.transform = 'translateY(0)';
+            // INICIAR EL RELOJ AQUÍ (15 minutos)
+            startEscasezTimer(60 * 15, document.querySelector('#countdown'));
+            // 2. Cargar Video
+            setTimeout(() => {
+                videoCont.style.opacity = '1';
+                videoCont.innerHTML = `<iframe src="https://www.youtube.com/embed/${youtubeId}?rel=0&modestbranding=1&autoplay=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+            }, 1500);
+
+            // 3. Mostrar Botón de Compra (Retraso calculado para que vean un poco de video)
+            // Puedes aumentar este tiempo a 10000 (10 seg) o más.
+            setTimeout(() => {
+                cta.style.opacity = '1';
+            }, 5000);
+        }
+        function startEscasezTimer(duration, display) {
+          var timer = duration, minutes, seconds;
+          var countdownInterval = setInterval(function () {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            display.textContent = minutes + ":" + seconds;
+
+            if (--timer < 0) {
+            // Cuando llega a cero, podemos reiniciarlo o dejarlo en 00:00
+            // Para e-commerce, a veces se reinicia para nuevos usuarios
+              clearInterval(countdownInterval);
+              display.textContent = "00:00";
+              display.style.color = "#ff4444"; // Cambia a rojo tenue al final
+            }
+          }, 1000);
+        }
+
+// Llamar a la función cuando se muestran los resultados
+// Agrega esta línea dentro de tu función `showVideoAndBridge`:
+// startEscasezTimer(60 * 15, document.querySelector('#countdown'));
+
+    </script>
+</body>
+</html>
