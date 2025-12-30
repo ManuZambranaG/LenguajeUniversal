@@ -84,7 +84,16 @@
             color: var(--gold-primary);
         }
 
-        input[type="date"] {
+        /* NUEVOS ESTILOS PARA INPUT SPLIT (EVITA CALENDARIO) */
+        .date-split-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 2rem;
+        }
+        
+        .tech-input {
             background: transparent;
             border: 1px solid var(--gold-dim);
             color: var(--gold-primary);
@@ -92,17 +101,25 @@
             font-family: 'JetBrains Mono', monospace;
             font-size: 1.2rem;
             text-align: center;
-            width: 100%;
-            max-width: 300px;
-            margin-bottom: 2rem;
             outline: none;
-            transition: border-color 0.3s;
-            color-scheme: dark; /* Dark mode date picker */
+            transition: all 0.3s;
+            border-radius: 4px;
         }
-
-        input[type="date"]:focus {
+        
+        .split-field {
+            width: 60px; /* Ancho para 2 dígitos */
+        }
+        
+        .tech-input:focus {
             border-color: var(--gold-primary);
             box-shadow: 0 0 10px rgba(197, 160, 101, 0.2);
+            background: rgba(197, 160, 101, 0.05);
+        }
+        
+        .date-separator {
+            color: var(--gold-dim);
+            font-size: 1.5rem;
+            font-weight: bold;
         }
 
         .btn-main {
@@ -272,7 +289,7 @@
           gap: 20px;
           flex-wrap: wrap;
           margin-bottom: 1.5rem;
-          filter: grayscale(1) brightness(1.5); /* Hace los logos dorados/blancos para que no rompan la estética */
+          filter: grayscale(1) brightness(1.5);
           opacity: 0.7;
         }
 
@@ -457,8 +474,14 @@
                 El sistema requiere tu huella temporal para calcular la intersección entre tu esencia y la frecuencia del año entrante.
             </p>
             <form id="calcForm">
-                <label for="birthdate">Ingresa tu Fecha de Nacimiento:</label>
-                <input type="date" id="birthdate" required>
+                <label for="dayInput">Ingresa tu Fecha de Nacimiento:</label>
+                <div class="date-split-container">
+                    <input type="tel" id="dayInput" placeholder="DD" maxlength="2" class="tech-input split-field">
+                    <span class="date-separator">/</span>
+                    <input type="tel" id="monthInput" placeholder="MM" maxlength="2" class="tech-input split-field">
+                    <span class="date-separator">/</span>
+                    <input type="tel" id="yearInput" placeholder="AAAA" maxlength="4" class="tech-input split-field" style="width: 80px;">
+                </div>
                 <br>
                 <button type="submit" class="btn-main">Iniciar Diagnóstico</button>
             </form>
@@ -499,7 +522,15 @@
             </div>
 
             <div class="bridge-phrase" id="bridgePhrase">
-                "Tu diagnóstico está incompleto. El video a continuación contiene la clave para estabilizar tu arquitectura antes del 1 de enero. Este 2026 sé tu aunténtico tú"
+                "Tu diagnóstico está incompleto. El video a continuación contiene la clave para estabilizar tu arquitectura antes del 1 de enero. Este 2026 sé tu auténtico tú"
+            </div>
+            
+            <div class="timer-box" style="display:none;" id="scarcityTimer">
+                <span class="timer-label">Sincronización de Oferta Temporal</span>
+                <div style="display: flex; align-items: center; justify-content: center;">
+                    <span class="pulsating-dot"></span>
+                    <span id="countdown">15:00</span>
+                </div>
             </div>
 
             <div class="video-wrapper" id="videoContainer">
@@ -513,7 +544,7 @@
                     </p>
                     <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
                       <p style="color: var(--gold-primary); font-size: 2.5rem; font-family: 'Cinzel', serif; font-weight: 700; line-height: 1;">
-                        $3.99 USD
+                        $3.99
                       </p>
                   <span style="background: rgba(197, 160, 101, 0.2); color: var(--gold-primary); padding: 4px 8px; font-size: 0.7rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace;">
                       USD
@@ -641,22 +672,54 @@
         };
 
         // ==========================================
-        // LÓGICA DEL SISTEMA
+        // NUEVA LÓGICA DE CAPTURA DE FECHA (CORREGIDA)
         // ==========================================
-
-        document.getElementById('calcForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const dateInput = document.getElementById('birthdate').value;
-            if(!dateInput) return;
-
-            // 1. Ocultar input y mostrar loading
-            document.getElementById('inputSection').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('inputSection').style.display = 'none';
-                document.getElementById('loadingScreen').style.display = 'block';
-                runTerminalSequence(dateInput);
-            }, 500);
+        
+        // 1. Auto salto de campos (UX Premium)
+        const inputs = ['dayInput', 'monthInput', 'yearInput'];
+        inputs.forEach((id, index) => {
+            const el = document.getElementById(id);
+            if(el) {
+                el.addEventListener('input', function() {
+                    if (this.value.length === this.maxLength) {
+                        if (index < inputs.length - 1) {
+                            document.getElementById(inputs[index + 1]).focus();
+                        }
+                    }
+                });
+            }
         });
+        
+        // 2. Procesar el Formulario
+        const form = document.getElementById('calcForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // CORRECCIÓN: Captura segura de los campos split
+                const d = document.getElementById('dayInput').value;
+                const m = document.getElementById('monthInput').value;
+                const y = document.getElementById('yearInput').value;
+                
+                // Validación básica
+                if(!d || !m || !y) {
+                    alert("Por favor completa la fecha.");
+                    return;
+                }
+                
+                // Formato seguro YYYY-MM-DD
+                // CORRECCIÓN: Uso de backticks para template literals
+                const dateInput = `${y}-${m}-${d}`; 
+                
+                // Ocultar input y mostrar loading
+                document.getElementById('inputSection').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('inputSection').style.display = 'none';
+                    document.getElementById('loadingScreen').style.display = 'block';
+                    runTerminalSequence(dateInput);
+                }, 500);
+            });
+        }
 
         // Simulación de Terminal
         function runTerminalSequence(date) {
@@ -687,9 +750,11 @@
 
         // Cálculo Numerológico (Año Personal)
         function calculateAndShowResult(dateString) {
-            const date = new Date(dateString);
-            const day = date.getDate() + 1; // Ajuste zona horaria simple
-            const month = date.getMonth() + 1;
+            // Manejo seguro de la fecha
+            const parts = dateString.split('-');
+            const year = parseInt(parts[0]);
+            const month = parseInt(parts[1]);
+            const day = parseInt(parts[2]);
 
             // Fórmula: Día + Mes + Año Universal (2026 = 1)
             // 2026 -> 2+0+2+6 = 10 -> 1
@@ -754,24 +819,30 @@
             const bridge = document.getElementById('bridgePhrase');
             const videoCont = document.getElementById('videoContainer');
             const cta = document.getElementById('ctaContainer');
+            const timerBox = document.getElementById('scarcityTimer');
 
             // 1. Mostrar Frase Puente
             bridge.style.opacity = '1';
             bridge.style.transform = 'translateY(0)';
-            // INICIAR EL RELOJ AQUÍ (15 minutos)
-            startEscasezTimer(60 * 15, document.querySelector('#countdown'));
-            // 2. Cargar Video
+            
+            // 2. Iniciar el Reloj (Visible ahora)
+            if(timerBox) {
+                timerBox.style.display = 'inline-block';
+                startEscasezTimer(60 * 15, document.querySelector('#countdown'));
+            }
+
+            // 3. Cargar Video
             setTimeout(() => {
                 videoCont.style.opacity = '1';
                 videoCont.innerHTML = `<iframe src="https://www.youtube.com/embed/${youtubeId}?rel=0&modestbranding=1&autoplay=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
             }, 1500);
 
-            // 3. Mostrar Botón de Compra (Retraso calculado para que vean un poco de video)
-            // Puedes aumentar este tiempo a 10000 (10 seg) o más.
+            // 4. Mostrar Botón de Compra (Retraso calculado)
             setTimeout(() => {
                 cta.style.opacity = '1';
             }, 5000);
         }
+
         function startEscasezTimer(duration, display) {
           var timer = duration, minutes, seconds;
           var countdownInterval = setInterval(function () {
@@ -784,18 +855,12 @@
             display.textContent = minutes + ":" + seconds;
 
             if (--timer < 0) {
-            // Cuando llega a cero, podemos reiniciarlo o dejarlo en 00:00
-            // Para e-commerce, a veces se reinicia para nuevos usuarios
               clearInterval(countdownInterval);
               display.textContent = "00:00";
-              display.style.color = "#ff4444"; // Cambia a rojo tenue al final
+              display.style.color = "#ff4444"; 
             }
           }, 1000);
         }
-
-// Llamar a la función cuando se muestran los resultados
-// Agrega esta línea dentro de tu función `showVideoAndBridge`:
-// startEscasezTimer(60 * 15, document.querySelector('#countdown'));
 
     </script>
 </body>
