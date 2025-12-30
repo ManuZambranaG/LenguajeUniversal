@@ -367,17 +367,16 @@
           margin-top: 8px;
           font-family: 'JetBrains Mono', monospace;
         }
-        /* ESTILO DEL RELOJ SUTIL */
+        /* ESTILO DEL RELOJ CORREGIDO (CENTRADO PERFECTO) */
         .timer-box {
           font-family: 'JetBrains Mono', monospace;
           text-align: center;
-          margin: 2rem 0 1rem 0;
+          margin: 1.5rem auto; /* "auto" a los lados lo centra automáticamente */
           padding: 10px;
           border: 1px solid rgba(197, 160, 101, 0.2);
-          display: inline-block;
-          left: 50%;
-          transform: translateX(-50%);
+          display: table; /* Hace que la caja se ajuste al tamaño del texto */
           position: relative;
+          /* Eliminamos left y transform que estaban causando el desvío */
         }
 
         .timer-label {
@@ -866,4 +865,5 @@
     </script>
 </body>
 </html>
+
 
